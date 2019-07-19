@@ -1099,8 +1099,8 @@ VisualEffectResource:
       1\n\t\t#define HDRP_USE_BASE_COLOR_MAP 1\n\t\t#define HDRP_USE_BASE_COLOR_MAP_COLOR
       1\n\t\t#define HDRP_USE_BASE_COLOR_MAP_ALPHA 1\n\t\t#define HDRP_USE_BASE_COLOR
       1\n\t\t\n\t\t\n\t\t\n\t\t#define VFX_LOCAL_SPACE 1\n\t\t\n\n\t\tCBUFFER_START(parameters)\n\t\t
-      \   float4 Size_c;\n\t\t    float2 flipBookSize;\n\t\t    float2 invFlipBookSize;\n\t\t
-      \   float Size_a;\n\t\t    float invSoftParticlesFadeDistance;\n\t\t    float
+      \   float4 Size_a;\n\t\t    float2 flipBookSize;\n\t\t    float2 invFlipBookSize;\n\t\t
+      \   float Size_b;\n\t\t    float invSoftParticlesFadeDistance;\n\t\t    float
       smoothness;\n\t\t    float metallic;\n\t\tCBUFFER_END\n\t\tTexture2D baseColorMap;\n\t\tSamplerState
       samplerbaseColorMap;\n\t\t\n\n\t\t\n\t\t#define VFX_NEEDS_COLOR_INTERPOLATOR
       (VFX_USE_COLOR_CURRENT || VFX_USE_ALPHA_CURRENT)\n\t\t#define IS_TRANSPARENT_PARTICLE
@@ -1155,25 +1155,25 @@ VisualEffectResource:
       && defined(VFX_VARYING_POSCS))\n\t\t\t#error VFX_VARYING_PS_INPUTS, VFX_VARYING_POSCS
       and VFX_VARYING_UV must be defined.\n\t\t\t#endif\n\t\t\t\n\t\t\t#include \"Packages/com.unity.visualeffectgraph/Shaders/RenderPipeline/HDRP/VFXCommon.cginc\"\n\t\t\t#include
       \"Packages/com.unity.visualeffectgraph/Shaders/VFXCommon.cginc\"\n\t\t\t\n\n\t\t\tvoid
-      SetAttribute_39EE3455(inout float size, float Size) /*attribute:size Composition:Multiply
-      Source:Slot Random:Off channels:XYZ */\n\t\t\t{\n\t\t\t    size *= Size;\n\t\t\t}\n\t\t\tvoid
-      Orient_1(inout float3 axisX, inout float3 axisY, inout float3 axisZ, float3
-      position) /*mode:FaceCameraPosition */\n\t\t\t{\n\t\t\t    \n\t\t\t    if (unity_OrthoParams.w
-      == 1.0f) // Face plane for ortho\n\t\t\t    {\n\t\t\t        float3x3 viewRot
-      = GetVFXToViewRotMatrix();\n\t\t\t        axisX = viewRot[0].xyz;\n\t\t\t        axisY
-      = viewRot[1].xyz;\n\t\t\t        #if VFX_LOCAL_SPACE // Need to remove potential
-      scale in local transform\n\t\t\t        axisX = normalize(axisX);\n\t\t\t        axisY
-      = normalize(axisY);\n\t\t\t        axisZ = cross(axisX,axisY);\n\t\t\t        #else\n\t\t\t
-      \       axisZ = -viewRot[2].xyz;\n\t\t\t        #endif\n\t\t\t    }\n\t\t\t
-      \   else\n\t\t\t    {\n\t\t\t        axisZ = normalize(position - GetViewVFXPosition());\n\t\t\t
-      \       axisX = normalize(cross(GetVFXToViewRotMatrix()[1].xyz,axisZ));\n\t\t\t
-      \       axisY = cross(axisZ,axisX);\n\t\t\t    }\n\t\t\t    \n\t\t\t}\n\t\t\tvoid
       AttributeFromCurve_45ABB909(inout float size, float age, float lifetime, float4
       Size) /*attribute:size Composition:Overwrite AlphaComposition:Overwrite SampleMode:OverLife
       Mode:PerComponent ColorMode:ColorAndAlpha channels:XYZ */\n\t\t\t{\n\t\t\t    float
       t = age / lifetime;\n\t\t\t    float value = 0.0f;\n\t\t\t    value = SampleCurve(Size,
-      t);\n\t\t\t    size = value;\n\t\t\t}\n\t\t\t\n\n\t\t\t\n\t\t\t#pragma vertex
-      vert\n\t\t\tVFX_VARYING_PS_INPUTS vert(uint id : SV_VertexID, uint instanceID
+      t);\n\t\t\t    size = value;\n\t\t\t}\n\t\t\tvoid SetAttribute_39EE3455(inout
+      float size, float Size) /*attribute:size Composition:Multiply Source:Slot Random:Off
+      channels:XYZ */\n\t\t\t{\n\t\t\t    size *= Size;\n\t\t\t}\n\t\t\tvoid Orient_1(inout
+      float3 axisX, inout float3 axisY, inout float3 axisZ, float3 position) /*mode:FaceCameraPosition
+      */\n\t\t\t{\n\t\t\t    \n\t\t\t    if (unity_OrthoParams.w == 1.0f) // Face
+      plane for ortho\n\t\t\t    {\n\t\t\t        float3x3 viewRot = GetVFXToViewRotMatrix();\n\t\t\t
+      \       axisX = viewRot[0].xyz;\n\t\t\t        axisY = viewRot[1].xyz;\n\t\t\t
+      \       #if VFX_LOCAL_SPACE // Need to remove potential scale in local transform\n\t\t\t
+      \       axisX = normalize(axisX);\n\t\t\t        axisY = normalize(axisY);\n\t\t\t
+      \       axisZ = cross(axisX,axisY);\n\t\t\t        #else\n\t\t\t        axisZ
+      = -viewRot[2].xyz;\n\t\t\t        #endif\n\t\t\t    }\n\t\t\t    else\n\t\t\t
+      \   {\n\t\t\t        axisZ = normalize(position - GetViewVFXPosition());\n\t\t\t
+      \       axisX = normalize(cross(GetVFXToViewRotMatrix()[1].xyz,axisZ));\n\t\t\t
+      \       axisY = cross(axisZ,axisX);\n\t\t\t    }\n\t\t\t    \n\t\t\t}\n\t\t\t\n\n\t\t\t\n\t\t\t#pragma
+      vertex vert\n\t\t\tVFX_VARYING_PS_INPUTS vert(uint id : SV_VertexID, uint instanceID
       : SV_InstanceID)\n\t\t\t{\n\t\t\t\tuint index = (id >> 2) + instanceID * 2048;\n\t\t\t\tVFX_VARYING_PS_INPUTS
       o = (VFX_VARYING_PS_INPUTS)0;\n\t\t\t\t\n\t\t\t\t\n\t\t\t\t\t\tuint deadCount
       = 0;\n\t\t\t\t\t\t#if USE_DEAD_LIST_COUNT\n\t\t\t\t\t\tdeadCount = deadListCount.Load(0);\n\t\t\t\t\t\t#endif\t\n\t\t\t\t\t\tif
@@ -1205,10 +1205,10 @@ VisualEffectResource:
       pivotY = (float)0;\n\t\t\t\t\t\tfloat pivotZ = (float)0;\n\t\t\t\t\t\tfloat
       size = (float)0.1;\n\t\t\t\t\t\tfloat scaleX = (float)1;\n\t\t\t\t\t\tfloat
       scaleY = (float)1;\n\t\t\t\t\t\tfloat scaleZ = (float)1;\n\t\t\t\t\t\tfloat
-      age = asfloat(attributeBuffer.Load((index * 0x3 + 0x302) << 2));\n\t\t\t\t\t\t\n\t\t\t\t\n\t\t\t\t\t\t#endif\n\t\t\t\t\t\t\n\t\t\t\tSetAttribute_39EE3455(
-      /*inout */size, Size_a);\n\t\t\t\tOrient_1( /*inout */axisX,  /*inout */axisY,
-      \ /*inout */axisZ, position);\n\t\t\t\tAttributeFromCurve_45ABB909( /*inout
-      */size, age, lifetime, Size_c);\n\t\t\t\t\n\n\t\t\t\t\n\t\t\t\tif (!alive)\n\t\t\t\t\treturn
+      age = asfloat(attributeBuffer.Load((index * 0x3 + 0x302) << 2));\n\t\t\t\t\t\t\n\t\t\t\t\n\t\t\t\t\t\t#endif\n\t\t\t\t\t\t\n\t\t\t\tAttributeFromCurve_45ABB909(
+      /*inout */size, age, lifetime, Size_a);\n\t\t\t\tSetAttribute_39EE3455( /*inout
+      */size, Size_b);\n\t\t\t\tOrient_1( /*inout */axisX,  /*inout */axisY,  /*inout
+      */axisZ, position);\n\t\t\t\t\n\n\t\t\t\t\n\t\t\t\tif (!alive)\n\t\t\t\t\treturn
       o;\n\t\t\t\t\n\t\t\t\to.VFX_VARYING_UV.x = float(id & 1);\n\t\t\t\to.VFX_VARYING_UV.y
       = float((id & 2) >> 1);\n\t\t\t\t\n\t\t\t\t\n\t\t\t\t\t\tfloat3 size3 = float3(size,size,size);\n\t\t\t\t\t\t#if
       VFX_USE_SCALEX_CURRENT\n\t\t\t\t\t\tsize3.x *= scaleX;\n\t\t\t\t\t\t#endif\n\t\t\t\t\t\t#if
@@ -1510,18 +1510,18 @@ VisualEffectResource:
         data[1]: -1
         data[2]: -1
         data[3]: 1
-      - op: 44
-        valueIndex: 35
-        data[0]: 7
-        data[1]: -1
-        data[2]: -1
-        data[3]: 0
       - op: 1
-        valueIndex: 39
+        valueIndex: 35
         data[0]: -1
         data[1]: -1
         data[2]: -1
         data[3]: 1
+      - op: 44
+        valueIndex: 36
+        data[0]: 7
+        data[1]: -1
+        data[2]: -1
+        data[3]: 0
       - op: 6
         valueIndex: 40
         data[0]: -1
@@ -1643,7 +1643,7 @@ VisualEffectResource:
           m_Value: -0.333
         - m_ExpressionIndex: 31
           m_Value: 360
-        - m_ExpressionIndex: 33
+        - m_ExpressionIndex: 32
           m_Value: 2
         - m_ExpressionIndex: 35
           m_Value: 8
@@ -2000,7 +2000,7 @@ VisualEffectResource:
       values:
       - nameId: Size_a
         index: 33
-      - nameId: Size_c
+      - nameId: Size_b
         index: 32
       - nameId: invSoftParticlesFadeDistance
         index: 44
@@ -2062,9 +2062,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Parent: {fileID: 114350483966674976}
   m_Children:
+  - {fileID: 8926484042661614573}
   - {fileID: 8926484042661614566}
   - {fileID: 8926484042661614570}
-  - {fileID: 8926484042661614573}
   m_UIPosition: {x: 726, y: 1297}
   m_UICollapsed: 0
   m_UISuperCollapsed: 0
@@ -2597,7 +2597,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Parent: {fileID: 8926484042661614557}
   m_Children: []
-  m_UIPosition: {x: 0, y: 0}
+  m_UIPosition: {x: 0, y: 151}
   m_UICollapsed: 0
   m_UISuperCollapsed: 0
   m_InputSlots:
